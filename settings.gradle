@@ -1,0 +1,3 @@
+rootProject.name='view_how_to_make_it'
+include ':app'
+include ':views'
