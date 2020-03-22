@@ -3,9 +3,7 @@ package com.clericyi.view.view
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import kotlin.math.atan2
 
 /**
  * author: ClericYi
@@ -151,7 +149,6 @@ class PathView : View {
         pathDraw(canvas)
         // 贝塞尔曲线
         Bezier(canvas)
-        invalidate()
     }
 
     private fun Bezier(canvas: Canvas?) {
@@ -169,6 +166,8 @@ class PathView : View {
             canvas?.drawLine(mBezierPos1?.get(0)!!, mBezierPos1?.get(1)!!, mBezierPos2?.get(0)!!, mBezierPos2?.get(1)!!, paintMoNi!!)
             canvas?.drawPoint(mBezierPos1?.get(0)!!, mBezierPos1?.get(1)!!, paintPoint!!)
             canvas?.drawPoint(mBezierPos2?.get(0)!!, mBezierPos2?.get(1)!!, paintPoint!!)
+            canvas?.drawPoint(mPos?.get(0)!!, mPos?.get(1)!!, paintPoint!!)
+            invalidate()
         }else{
             canvas?.drawPoint(mBezierPos1?.get(0)!!, mBezierPos1?.get(1)!!, paintPoint!!)
             canvas?.drawPoint(mBezierPos2?.get(0)!!, mBezierPos2?.get(1)!!, paintPoint!!)
@@ -184,7 +183,6 @@ class PathView : View {
         if (pathLength!! >= mDistance!!) {
             mDistance?.let { pathMeasure?.getPosTan(it, mPos, mTan) }
             mDistance = mStep?.let { mDistance?.plus(it) }
-            canvas?.drawPoint(mPos?.get(0)!!, mPos?.get(1)!!, paintPoint!!)
 
         } else {
             // 如果不设置将会出现空白的问题
