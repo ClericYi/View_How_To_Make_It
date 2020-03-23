@@ -27,13 +27,11 @@ class XfermodeView : View {
     }
 
     private fun initPaint() {
-
         paint = Paint()
-
 
         circleBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.circle)
         rectBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.rect)
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -43,13 +41,13 @@ class XfermodeView : View {
         )
         canvas?.let { canvasIt ->
             paint?.let {paintIt->
-                paintIt.color = Color.GREEN
-                canvasIt.drawCircle(100f, 100f, 50f, paintIt)
-//                rectBitmap?.let { canvas.drawBitmap(it,0f,0f, paintIt) }
+//                paintIt.color = Color.GREEN
+//                canvasIt.drawCircle(100f, 100f, 50f, paintIt)
+                rectBitmap?.let { canvas.drawBitmap(it,0f,0f, paintIt) }
                 paintIt.xfermode = xfermode
-                paintIt.color = Color.BLUE
-                canvasIt.drawRect(100f, 100f, 200f, 200f, paintIt)
-//                circleBitmap?.let { canvas.drawBitmap(it, 50f, 50f,paintIt) }
+//                paintIt.color = Color.BLUE
+//                canvasIt.drawRect(100f, 100f, 200f, 200f, paintIt)
+                circleBitmap?.let { canvas.drawBitmap(it, 50f, 50f,paintIt) }
                 paintIt.xfermode = null
             }
 

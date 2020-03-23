@@ -67,7 +67,7 @@ class GuaCardView : View, View.OnTouchListener {
         DBitmap =
             SBitmap?.let { Bitmap.createBitmap(it.width, it.height, Bitmap.Config.ARGB_8888) }
         bitCanvas = DBitmap?.let { Canvas(it) }
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+        xfermode = PorterDuffXfermode(PorterDuff.Mode.XOR)
     }
 
     override fun onDraw(canvas: Canvas?) {
@@ -100,12 +100,8 @@ class GuaCardView : View, View.OnTouchListener {
                 Log.e("GuaCardView,Down", startX.toString() + ":" + startY)
                 mPath.moveTo(startX!!, startY!!)
             }
-
             MotionEvent.ACTION_UP -> {
                 Log.e("GuaCardView,Up", startX.toString() + ":" + startY)
-            }
-            else ->{
-                Log.e("GuaCardView,Else", startX.toString() + ":" + startY)
             }
         }
         postInvalidate()
