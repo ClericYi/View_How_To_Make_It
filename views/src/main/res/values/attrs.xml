@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="pieCharts">
+        <attr name="circleStrokeWidth" format="dimension" />
+        <attr name="pieLineColor" format="color" />
+        <attr name="backColor" format="color" />
+    </declare-styleable>
+</resources>

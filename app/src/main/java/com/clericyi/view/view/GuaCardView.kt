@@ -18,6 +18,7 @@ class GuaCardView : View, View.OnTouchListener {
      * 原图
      */
     private var SBitmap: Bitmap? = null
+    private var SBitmapSize: Int? = null
 
     /**
      * 目标图片
@@ -34,6 +35,8 @@ class GuaCardView : View, View.OnTouchListener {
      * 记录手指划过的路劲
      */
     private val mPath: Path = Path()
+    private var mPathMeasure: PathMeasure = PathMeasure(mPath, false)
+    private var mLength: Float = 0f
 
     private var startX: Float? = null
     private var startY: Float? = null
@@ -65,7 +68,11 @@ class GuaCardView : View, View.OnTouchListener {
         SBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.one)
         bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.two)
         DBitmap =
-            SBitmap?.let { Bitmap.createBitmap(it.width, it.height, Bitmap.Config.ARGB_8888) }
+            SBitmap?.let {
+                Bitmap.createBitmap(it.width, it.height, Bitmap.Config.ARGB_8888)
+            }
+        SBitmapSize = SBitmap?.let { it.width * it.height * 2 / 5 }
+
         bitCanvas = DBitmap?.let { Canvas(it) }
         xfermode = PorterDuffXfermode(PorterDuff.Mode.XOR)
     }
@@ -73,17 +80,18 @@ class GuaCardView : View, View.OnTouchListener {
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         bitmap?.let { canvas?.drawBitmap(it, 0f, 0f, mPaint) }
-        val layerId =
-            canvas?.saveLayer(null, null)
-
-        mPaint?.let { bitCanvas?.drawPath(mPath, it) }
-        SBitmap?.let { canvas?.drawBitmap(it, 0f, 0f, mPaint) }
-        // 叠加模式
-        mPaint?.xfermode = xfermode
-        DBitmap?.let { canvas?.drawBitmap(it, 0f, 0f, mPaint) }
-        // 重置xfermode模式
-        mPaint?.xfermode = null
-        layerId?.let { canvas.restoreToCount(it) }
+        if (mLength < SBitmapSize!!) {
+            val layerId =
+                canvas?.saveLayer(null, null)
+            mPaint?.let { bitCanvas?.drawPath(mPath, it) }
+            SBitmap?.let { canvas?.drawBitmap(it, 0f, 0f, mPaint) }
+            // 叠加模式
+            mPaint?.xfermode = xfermode
+            DBitmap?.let { canvas?.drawBitmap(it, 0f, 0f, mPaint) }
+            // 重置xfermode模式
+            mPaint?.xfermode = null
+            layerId?.let { canvas.restoreToCount(it) }
+        }
     }
 
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
@@ -102,6 +110,9 @@ class GuaCardView : View, View.OnTouchListener {
             }
             MotionEvent.ACTION_UP -> {
                 Log.e("GuaCardView,Up", startX.toString() + ":" + startY)
+                mPathMeasure = PathMeasure(mPath, false)
+                mLength += mPathMeasure.length * mPaint?.strokeWidth!!
+                Log.e("GuaCardView,mLength", mLength.toString() + ":" + SBitmapSize)
             }
         }
         postInvalidate()

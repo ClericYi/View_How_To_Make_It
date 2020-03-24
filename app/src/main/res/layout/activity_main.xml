@@ -22,19 +22,34 @@
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        />-->
 
-    <com.clericyi.view.view.XfermodeView
-        android:id="@+id/xfermodeView"
+<!--    <com.clericyi.view.view.XfermodeView-->
+<!--        android:id="@+id/xfermodeView"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="300dp"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        />-->
+
+<!--    <com.clericyi.view.view.GuaCardView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="0dp"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/xfermodeView"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        />-->
+
+<!--    <com.clericyi.views.BarChartView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="300dp"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"/>-->
+
+    <com.clericyi.views.PieChartView
+        android:id="@+id/pie"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:backColor="#ffd9d9d9"
+        app:circleStrokeWidth='2dp'
         app:layout_constraintStart_toStartOf="parent"
-        />
-
-    <com.clericyi.view.view.GuaCardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/xfermodeView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
