@@ -80,8 +80,8 @@ class PieChartView : BaseView {
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         // 两个工作部分：文字描述、弧形
-        drawDescription(canvas)
         drawArc(canvas)
+        drawDescription(canvas)
     }
 
     // 绘制弧形
@@ -113,13 +113,7 @@ class PieChartView : BaseView {
             // 线的位置计算，中心点已经转移到了正中心
             // 通过一个弧来进行旋转
             mArcPaint?.let {
-                canvas.drawLine(
-                    mRadius,
-                    0f,
-                    mRadius + dp2px(context, 32f).toFloat(),
-                    0f,
-                    it
-                )
+                canvas.drawLine(mRadius, 0f, mRadius + dp2px(context, 32f).toFloat(), 0f, it)
             }
             drawDictateLines(canvas, i)
             canvas.restore()
@@ -129,8 +123,7 @@ class PieChartView : BaseView {
     private fun drawDictateLines(canvas: Canvas, i: Int) {
         canvas.save()
         canvas.translate(mRadius + dp2px(context, 32f), 0f)
-        val ro = getRatioHalfSumDegrees(i)
-        canvas.rotate(-ro)
+        canvas.rotate(-getRatioHalfSumDegrees(i))
         mArcPaint?.let {
             canvas.drawLine(0f, 0f, dp2px(context, 16f).toFloat(), 0f, it)
             it.color = mArcColors!![i]
@@ -171,7 +164,9 @@ class PieChartView : BaseView {
         colors: List<Int>?,
         descriptions: List<String>?
     ) {
-        if (data != null && data.isNotEmpty() && colors != null && colors.isNotEmpty() && descriptions != null && descriptions.isNotEmpty()
+        if (data != null && data.isNotEmpty()
+            && colors != null && colors.isNotEmpty()
+            && descriptions != null && descriptions.isNotEmpty()
         ) {
             mRatios = transformData(data)
             mDescription = descriptions

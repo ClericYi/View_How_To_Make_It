@@ -38,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         mDescription.add("描述三")
         mDescription.add("描述四")
         //点击动画开启
-        pie.setCanClickAnimation(true)
         pie.setData(mRatios, mArcColors, mDescription)
     }
 }

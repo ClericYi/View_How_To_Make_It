@@ -34,31 +34,24 @@ open class BaseView : View {
 
     protected var scale = 0.5f
 
-    protected var canAnimation = false
-
     protected var animator: ValueAnimator? = null
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
         mWidth = MeasureSpec.getSize(widthMeasureSpec).toFloat()
         mHeight = MeasureSpec.getSize(heightMeasureSpec).toFloat()
-
     }
-
 
     private fun initAnimation() {
         animator = ValueAnimator.ofFloat(0.2f, 1f)
         // 通过插值器来完成动画
         animator?.interpolator = LinearInterpolator()
         animator?.duration = 1000
-        animator?.addUpdateListener(AnimatorUpdateListener { animation ->
+        animator?.addUpdateListener { animation ->
             scale = animation.animatedValue as Float
             Log.e("BaseView", scale.toString())
             postInvalidate()
-        })
+        }
     }
 
-    fun setCanClickAnimation(canAnimation: Boolean) {
-        this.canAnimation = canAnimation
-    }
 }
