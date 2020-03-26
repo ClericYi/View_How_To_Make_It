@@ -1,15 +1,15 @@
-package com.clericyi.views
+package com.clericyi.views.chart
 
 import android.content.Context
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
-import android.view.MotionEvent
-import android.view.View
+import com.clericyi.views.BaseView
 import com.clericyi.views.DensityUtil.dp2px
+import com.clericyi.views.model.PieBean
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.floor
 
 /**
@@ -173,6 +173,18 @@ class PieChartView : BaseView {
             mArcColors = colors
             animator?.start()
         }
+    }
+
+    fun setData(pieBeanList: List<PieBean>){
+        val data: MutableList<Float> = ArrayList()
+        val colors: MutableList<Int> = ArrayList()
+        val descriptions: MutableList<String> = ArrayList()
+        for(i in pieBeanList.indices){
+            pieBeanList[i].getRatio()?.let { data.add(it) }
+            pieBeanList[i].getArcColor()?.let { colors.add(it) }
+            pieBeanList[i].getDescription()?.let { descriptions.add(it) }
+        }
+        setData(data, colors, descriptions)
     }
 
     // 数据修正，转换成百分比
