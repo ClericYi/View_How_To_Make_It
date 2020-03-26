@@ -17,7 +17,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-//        initPieDatas()
+        initPieDatas()
         initBarDatas()
     }
 
@@ -35,17 +35,12 @@ class MainActivity : AppCompatActivity() {
         barBeans.add(barBean3)
         barBeans.add(barBean4)
         barBeans.add(barBean5)
-        barBeans.add(barBean4)
+
         bar.setData(barBeans)
     }
 
     private fun initPieDatas() {
-        val mRatios: MutableList<Float> =
-            ArrayList()
-        val mDescription: MutableList<String> =
-            ArrayList()
-        val mArcColors: MutableList<Int> = ArrayList()
-        val pieBean1 = PieBean().setArcColor(blueColor).setRatio(1f).setDescription("描述一")
+        val pieBean1 = PieBean().setArcColor(blueColor).setRatio(4f).setDescription("描述一")
         val pieBean2 = PieBean().setArcColor(redColor).setRatio(1f).setDescription("描述二")
         val pieBean3 = PieBean().setArcColor(yellowColor).setRatio(1f).setDescription("描述三")
         val pieBean4 = PieBean().setArcColor(greenColor).setRatio(1f).setDescription("描述四")
@@ -55,8 +50,6 @@ class MainActivity : AppCompatActivity() {
         pieBeans.add(pieBean3)
         pieBeans.add(pieBean4)
 
-//        pie.setData(mRatios, mArcColors, mDescription)
-//        pie.setData(pieBeans)
-
+        pie.setData(pieBeans)
     }
 }
