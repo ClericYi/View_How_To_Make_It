@@ -6,7 +6,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
+import android.view.animation.BounceInterpolator
 import android.view.animation.LinearInterpolator
+import android.view.animation.OvershootInterpolator
 
 /**
  * author: ClericYi
@@ -43,10 +45,10 @@ open class BaseView : View {
     }
 
     private fun initAnimation() {
-        animator = ValueAnimator.ofFloat(0.3f, 1f)
+        animator = ValueAnimator.ofFloat(0.2f, 1f)
         // 通过插值器来完成动画
-        animator?.interpolator = LinearInterpolator()
-        animator?.duration = 1500
+        animator?.interpolator = BounceInterpolator()
+        animator?.duration = 2000
         animator?.addUpdateListener { animation ->
             scale = animation.animatedValue as Float
             postInvalidate()

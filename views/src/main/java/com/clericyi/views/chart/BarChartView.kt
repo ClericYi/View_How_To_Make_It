@@ -57,8 +57,6 @@ class BarChartView : BaseView, View.OnTouchListener {
     private val mTextBounds = Rect()
 
     private var mMaxData = 0f
-    // 最大滑动距离
-    private var mMaxScrollSize = 0f
 
     // 渐变色
     private var shader: LinearGradient? = null
@@ -96,8 +94,6 @@ class BarChartView : BaseView, View.OnTouchListener {
 
         mBarMaxHeight = mHeight - 2 * offset
 
-        mMaxScrollSize = mBarSingleWidth * mData!!.size
-
         mBarBlankSize = dp2px(context, mBarSingleWidth / 4).toFloat()
         // 用于文字的测量
         val fontMetrics = mBarPaint?.fontMetricsInt
@@ -125,17 +121,28 @@ class BarChartView : BaseView, View.OnTouchListener {
     // 2。 文字描述绘制
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        var count:Int = 0
         for (i in mData!!.indices) {
-            val height = (mMaxData - mData!![i]) / mMaxData * mBarMaxHeight
-            mBarPaint?.shader = null
-            drawBarValue(canvas, i, height)
-            drawDescriptions(canvas, i)
-            mBarPaint?.shader = shader
-            drawBars(canvas, height)
-            if (i != 10) {
+            if (!checkIsNeedDraw(i)) {
+                val height = (mMaxData - mData!![i]) / mMaxData * mBarMaxHeight
+                mBarPaint?.shader = null
+                drawBarValue(canvas, i, height)
+                drawDescriptions(canvas, i)
+                mBarPaint?.shader = shader
+                drawBars(canvas, height)
+                count++
+            }
+            if (i != mData!!.size - 1) {
                 canvas?.translate(mBarSingleWidth, 0f)
             }
         }
+        Log.e("onDraw", count.toString())
+    }
+
+    private fun checkIsNeedDraw(i: Int): Boolean {
+        if (mBarSingleWidth * (i + 1) < scrollX) return true
+        if (mBarSingleWidth * i > scrollX + mWidth) return true
+        return false
     }
 
     private fun drawBarValue(canvas: Canvas?, index: Int, height: Float) {
