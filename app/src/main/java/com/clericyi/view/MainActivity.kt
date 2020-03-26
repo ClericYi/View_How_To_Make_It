@@ -55,7 +55,6 @@ class MainActivity : AppCompatActivity() {
         pieBeans.add(pieBean3)
         pieBeans.add(pieBean4)
 
-        //点击动画开启
 //        pie.setData(mRatios, mArcColors, mDescription)
 //        pie.setData(pieBeans)
 

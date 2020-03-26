@@ -32,7 +32,7 @@ open class BaseView : View {
     protected var mWidth = 0f
     protected var mHeight = 0f
 
-    protected var scale = 0.5f
+    protected var scale = 0.3f
 
     protected var animator: ValueAnimator? = null
 
@@ -43,13 +43,12 @@ open class BaseView : View {
     }
 
     private fun initAnimation() {
-        animator = ValueAnimator.ofFloat(0.2f, 1f)
+        animator = ValueAnimator.ofFloat(0.3f, 1f)
         // 通过插值器来完成动画
         animator?.interpolator = LinearInterpolator()
-        animator?.duration = 1000
+        animator?.duration = 1500
         animator?.addUpdateListener { animation ->
             scale = animation.animatedValue as Float
-            Log.e("BaseView", scale.toString())
             postInvalidate()
         }
     }

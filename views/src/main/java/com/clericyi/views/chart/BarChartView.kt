@@ -8,6 +8,7 @@ import android.view.GestureDetector
 import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.AlphaAnimation
 import com.clericyi.views.BaseView
 import com.clericyi.views.DensityUtil.dp2px
 import com.clericyi.views.model.BarBean
@@ -42,11 +43,13 @@ class BarChartView : BaseView, View.OnTouchListener {
     // 数据显示量
     private var mBarShowNum = 6
     private val mMinBarScrollShowNum = 5
+
     // 单个Bar的宽度
     private var mBarSingleWidth = 0f
     private var mBarMaxHeight = 0f
     private var mBarMaxWidth = 0f
     private var mBarBlankSize = 0f
+    private val mBarCornerSize = 20f
 
     private var mHeightBlankSize = 0f
     private var mTextHeight = 0f
@@ -65,6 +68,9 @@ class BarChartView : BaseView, View.OnTouchListener {
 
     private var offset = 0f
 
+    // 外部设定变量
+    private var mColor: Int = Color.RED
+
     private fun init() {
         mData = ArrayList()
         mDescription = ArrayList()
@@ -78,7 +84,6 @@ class BarChartView : BaseView, View.OnTouchListener {
 
         detector = GestureDetector(context, BarGesture())
         detector?.setIsLongpressEnabled(true)
-
 
         setOnTouchListener(this)
     }
@@ -108,7 +113,7 @@ class BarChartView : BaseView, View.OnTouchListener {
                 mBarBlankSize * 2,
                 mBarMaxHeight,
                 Color.WHITE,
-                Color.RED,
+                mColor,
                 Shader.TileMode.CLAMP
             )
         }
@@ -168,11 +173,13 @@ class BarChartView : BaseView, View.OnTouchListener {
     private fun drawBars(canvas: Canvas?, height: Float) {
         Log.e("drawBars", (offset + height).toString())
         mBarPaint?.let {
-            canvas?.drawRect(
+            canvas?.drawRoundRect(
                 mBarBlankSize,
-                offset + height,
+                offset + mBarMaxHeight - scale * (mBarMaxHeight - height),
                 mBarSingleWidth - mBarBlankSize,
                 mBarMaxHeight + offset,
+                mBarCornerSize,
+                mBarCornerSize,
                 it
             )
         }
@@ -205,7 +212,6 @@ class BarChartView : BaseView, View.OnTouchListener {
             }
             return false
         }
-
     }
 
     // 如果手势能响应，就交给手势
@@ -247,5 +253,10 @@ class BarChartView : BaseView, View.OnTouchListener {
     // 将最大值修正
     private fun fixMaxData() {
         mMaxData = ceil(mMaxData / 40) * 40
+    }
+
+    // 自定义颜色
+    fun setColor(color: Int) {
+        mColor = color
     }
 }
