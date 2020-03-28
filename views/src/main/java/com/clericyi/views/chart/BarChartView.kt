@@ -97,14 +97,12 @@ class BarChartView : BaseView, View.OnTouchListener {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
-        mBarMaxWidth = mWidth
-        mBarSingleWidth = mBarMaxWidth / min(mMinBarScrollShowNum, mBarShowNum)
-
-        mBarMaxHeight = mHeight - 2 * offset
-
-        mBarBlankSize = dp2px(context, mBarSingleWidth / 4).toFloat()
-
+        if(mBarBlankSize == 0f) {
+            mBarMaxWidth = mWidth
+            mBarSingleWidth = mBarMaxWidth / min(mMinBarScrollShowNum, mBarShowNum)
+            mBarMaxHeight = mHeight - 2 * offset
+            mBarBlankSize = dp2px(context, mBarSingleWidth / 4).toFloat()
+        }
         if (shader == null) {
             shader = LinearGradient(
                 0f,

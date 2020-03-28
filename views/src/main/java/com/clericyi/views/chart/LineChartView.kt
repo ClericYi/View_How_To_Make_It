@@ -65,7 +65,8 @@ class LineChartView : BaseView, View.OnTouchListener {
     private var offset = 0f
 
     // 外部设定变量
-    private var mColor: Int = Color.RED
+    private var mPointColor: Int = Color.RED
+    private var mLineColor: Int = Color.BLACK
 
     private fun init() {
         mPaintDefaultSize = DensityUtil.dp2px(context, 1f).toFloat()
@@ -76,7 +77,7 @@ class LineChartView : BaseView, View.OnTouchListener {
 
         mLinePaint = Paint()
         mLinePaint?.style = Paint.Style.FILL
-        mLinePaint?.color = Color.BLACK
+        mLinePaint?.color = mLineColor
         mLinePaint?.isAntiAlias = true
         mLinePaint?.textSize = DensityUtil.dp2px(context, 14f).toFloat()
         mLinePaint?.strokeWidth = mPaintDefaultSize
@@ -113,7 +114,7 @@ class LineChartView : BaseView, View.OnTouchListener {
     // 3。 文字描述绘制
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        mLinePaint?.color = Color.BLACK
+        mLinePaint?.color = mLineColor
         mLinePaint?.strokeWidth = mPaintDefaultSize
         for (i in mData!!.indices) {
             if (!checkIsNeedDraw(i)) {
@@ -131,7 +132,7 @@ class LineChartView : BaseView, View.OnTouchListener {
             mLinePaint?.let { paint ->
                 dataPoints?.let { points ->
                     it.drawLines(points, paint)
-                    paint.color = Color.RED
+                    paint.color = mPointColor
                     paint.strokeWidth = mPaintCapSize
                     it.drawPoints(points, paint)
                 }
@@ -261,7 +262,11 @@ class LineChartView : BaseView, View.OnTouchListener {
     }
 
     // 自定义颜色
-    fun setColor(color: Int) {
-        mColor = color
+    fun setLineColor(color: Int) {
+        mLineColor = color
+    }
+
+    fun setPointColor(color: Int) {
+        mPointColor = color
     }
 }

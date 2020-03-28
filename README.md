@@ -54,3 +54,25 @@ private fun initBarDatas() {
         bar.setData(barBeans)
     }
 ```
+
+# 折线图的使用
+![](imgs/line.gif)
+```kotlin
+private fun initLineDatas() {
+        val lineBean0 = LineBean().setValue(30f).setDescription("描述一")
+        val lineBean1 = LineBean().setValue(50f).setDescription("描述二")
+        val lineBean2 = LineBean().setValue(60f).setDescription("描述三")
+        val lineBean3 = LineBean().setValue(80f).setDescription("描述四")
+        val lineBean4 = LineBean().setValue(20f).setDescription("描述五")
+        val lineBean5 = LineBean().setValue(10f).setDescription("描述留")
+        val lineBeans: MutableList<LineBean> = ArrayList()
+        lineBeans.add(lineBean0)
+        lineBeans.add(lineBean1)
+        lineBeans.add(lineBean2)
+        lineBeans.add(lineBean3)
+        lineBeans.add(lineBean4)
+        lineBeans.add(lineBean5)
+
+        line.setData(lineBeans)
+    }
+```
