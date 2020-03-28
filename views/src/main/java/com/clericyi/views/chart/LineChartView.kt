@@ -3,24 +3,20 @@ package com.clericyi.views.chart
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
 import android.view.GestureDetector
-import android.view.GestureDetector.SimpleOnGestureListener
 import android.view.MotionEvent
 import android.view.View
-import android.view.animation.AlphaAnimation
 import com.clericyi.views.BaseView
-import com.clericyi.views.DensityUtil.dp2px
-import com.clericyi.views.model.BarBean
+import com.clericyi.views.DensityUtil
+import com.clericyi.views.model.LineBean
 import kotlin.math.ceil
 import kotlin.math.min
 
-
 /**
  * author: ClericYi
- * time: 2020/3/25
+ * time: 2020/3/28
  */
-class BarChartView : BaseView, View.OnTouchListener {
+class LineChartView : BaseView, View.OnTouchListener {
     constructor(context: Context) : super(context) {
         init()
     }
@@ -35,22 +31,20 @@ class BarChartView : BaseView, View.OnTouchListener {
         init()
     }
 
-    private var mBarPaint: Paint? = null
+    private var mLinePaint: Paint? = null
 
     // 数据组成成分：1。数据 2。数据的介绍
     private var mData: List<Float>? = null
     private var mDescription: List<String>? = null
 
     // 数据显示量
-    private var mBarShowNum = 6
-    private val mMinBarScrollShowNum = 6
+    private var mLineShowNum = 6
+    private val mMinLineScrollShowNum = 5
 
-    // 单个Bar的宽度
-    private var mBarSingleWidth = 0f
-    private var mBarMaxHeight = 0f
-    private var mBarMaxWidth = 0f
-    private var mBarBlankSize = 0f
-    private val mBarCornerSize = 20f
+    // 单个Line的宽度
+    private var mLineSingleWidth = 0f
+    private var mLineMaxHeight = 0f
+    private var mLineMaxWidth = 0f
 
     private var mHeightBlankSize = 0f
     private var mTextHeight = 0f
@@ -59,8 +53,11 @@ class BarChartView : BaseView, View.OnTouchListener {
 
     private var mMaxData = 0f
 
-    // 渐变色
-    private var shader: LinearGradient? = null
+    private var dataPoints: FloatArray? = null
+
+    private var mPaintCapSize = 0f
+    private var mPaintDefaultSize = 0f
+
 
     // 手势动作
     private var detector: GestureDetector? = null
@@ -71,128 +68,129 @@ class BarChartView : BaseView, View.OnTouchListener {
     private var mColor: Int = Color.RED
 
     private fun init() {
+        mPaintDefaultSize = DensityUtil.dp2px(context, 1f).toFloat()
+        mPaintCapSize = DensityUtil.dp2px(context, 8f).toFloat()
+
         mData = ArrayList()
         mDescription = ArrayList()
 
-        mBarPaint = Paint()
-        mBarPaint?.style = Paint.Style.FILL
-        mBarPaint?.color = Color.BLACK
-        mBarPaint?.isAntiAlias = true
-        mBarPaint?.textSize = dp2px(context, 12f).toFloat()
-        mBarPaint?.strokeWidth = dp2px(context, 1f).toFloat()
+        mLinePaint = Paint()
+        mLinePaint?.style = Paint.Style.FILL
+        mLinePaint?.color = Color.BLACK
+        mLinePaint?.isAntiAlias = true
+        mLinePaint?.textSize = DensityUtil.dp2px(context, 14f).toFloat()
+        mLinePaint?.strokeWidth = mPaintDefaultSize
+        mLinePaint?.strokeCap = Paint.Cap.ROUND
 
-        detector = GestureDetector(context, BarGesture())
+        detector = GestureDetector(context, LineGesture())
 
         setOnTouchListener(this)
 
         // 小数据防止重复初始化
-        offset = dp2px(context, 32f).toFloat()
+        offset = DensityUtil.dp2px(context, 32f).toFloat()
         // 用于文字的测量
-        val fontMetrics = mBarPaint?.fontMetricsInt
+        val fontMetrics = mLinePaint?.fontMetricsInt
         mHeightBlankSize =
             (offset - fontMetrics!!.let { it.bottom - it.top }) / 2
         mTextHeight =
             (offset + fontMetrics.let { it.bottom - it.top }) / 2
+
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-
-        mBarMaxWidth = mWidth
-        mBarSingleWidth = mBarMaxWidth / min(mMinBarScrollShowNum, mBarShowNum)
-
-        mBarMaxHeight = mHeight - 2 * offset
-
-        mBarBlankSize = dp2px(context, mBarSingleWidth / 4).toFloat()
-
-        if (shader == null) {
-            shader = LinearGradient(
-                0f,
-                0f,
-                mBarBlankSize * 2,
-                mBarMaxHeight,
-                Color.WHITE,
-                mColor,
-                Shader.TileMode.CLAMP
-            )
+        if (mLineMaxWidth == 0f) {
+            mLineMaxWidth = mWidth
+            mLineSingleWidth = mLineMaxWidth / min(mLineShowNum, mMinLineScrollShowNum)
+            mLineMaxHeight = mHeight - 2 * offset
         }
     }
 
 
     // Draw中要干什么事情？
-    // 1。 柱状绘制
-    // 2。 文字描述绘制
+    // 1。 线绘制
+    // 2。点绘制
+    // 3。 文字描述绘制
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+        mLinePaint?.color = Color.BLACK
+        mLinePaint?.strokeWidth = mPaintDefaultSize
         for (i in mData!!.indices) {
             if (!checkIsNeedDraw(i)) {
-                val height = (mMaxData - mData!![i]) / mMaxData * mBarMaxHeight
-                mBarPaint?.shader = null
-                drawBarValue(canvas, i, height)
+                val height = (mMaxData - mData!![i]) / mMaxData * mLineMaxHeight
+                drawLineValue(canvas, i, height)
                 drawDescriptions(canvas, i)
-                mBarPaint?.shader = shader
-                drawBars(canvas, height)
+                calPoints(height, i)
             }
             if (i != mData!!.size - 1) {
-                canvas?.translate(mBarSingleWidth, 0f)
+                canvas?.translate(mLineSingleWidth, 0f)
+            }
+        }
+        canvas?.translate(-1 * mLineSingleWidth * (mData!!.size - 1), 0f)
+        canvas?.let {
+            mLinePaint?.let { paint ->
+                dataPoints?.let { points ->
+                    it.drawLines(points, paint)
+                    paint.color = Color.RED
+                    paint.strokeWidth = mPaintCapSize
+                    it.drawPoints(points, paint)
+                }
             }
         }
     }
 
+    private fun calPoints(height: Float, index: Int) {
+        dataPoints!![index * 4] = mLineSingleWidth * (index + 0.5f)
+        dataPoints!![index * 4 + 1] = (mLineMaxHeight - height) * (1 - scale) + height + offset
+        if (index != 0) {
+            dataPoints!![index * 4 - 2] = dataPoints!![index * 4]
+            dataPoints!![index * 4 - 1] = dataPoints!![index * 4 + 1]
+        }
+        if (index == mData!!.size - 1) {
+            dataPoints!![index * 4 + 2] = dataPoints!![index * 4]
+            dataPoints!![index * 4 + 3] = dataPoints!![index * 4 + 1]
+        }
+    }
+
     private fun checkIsNeedDraw(i: Int): Boolean {
-        if (mBarSingleWidth * (i + 1) < scrollX) return true
-        if (mBarSingleWidth * i > scrollX + mWidth) return true
+        if (mLineSingleWidth * (i + 1) < scrollX) return true
+        if (mLineSingleWidth * i > scrollX + mWidth) return true
         return false
     }
 
-    private fun drawBarValue(canvas: Canvas?, index: Int, height: Float) {
+    private fun drawLineValue(canvas: Canvas?, index: Int, height: Float) {
         val value = mData?.get(index).toString()
-        mBarPaint?.getTextBounds(
+        mLinePaint?.getTextBounds(
             value,
             0,
             value.length,
             mTextBounds
         )
-        val blankSize = (mBarSingleWidth - (mTextBounds.right - mTextBounds.left)) / 2
-        mBarPaint?.let { canvas?.drawText(value, blankSize, mTextHeight + height, it) }
+        val blankSize = (mLineSingleWidth - (mTextBounds.right - mTextBounds.left)) / 2
+        mLinePaint?.let { canvas?.drawText(value, blankSize, mTextHeight + height, it) }
     }
 
     private fun drawDescriptions(canvas: Canvas?, index: Int) {
         val description = mDescription?.get(index)
-        mBarPaint?.getTextBounds(
+        mLinePaint?.getTextBounds(
             description,
             0,
             description?.length!!,
             mTextBounds
         )
-        val blankSize = (mBarSingleWidth - (mTextBounds.right - mTextBounds.left)) / 2
-        mBarPaint?.let {
+        val blankSize = (mLineSingleWidth - (mTextBounds.right - mTextBounds.left)) / 2
+        mLinePaint?.let {
             canvas?.drawText(
                 description!!,
                 blankSize,
-                mTextHeight + mBarMaxHeight + offset,
-                it
-            )
-        }
-    }
-
-
-    private fun drawBars(canvas: Canvas?, height: Float) {
-        mBarPaint?.let {
-            canvas?.drawRoundRect(
-                mBarBlankSize,
-                offset + mBarMaxHeight - scale * (mBarMaxHeight - height),
-                mBarSingleWidth - mBarBlankSize,
-                mBarMaxHeight + offset,
-                mBarCornerSize,
-                mBarCornerSize,
+                mTextHeight + mLineMaxHeight + offset,
                 it
             )
         }
     }
 
     // 手势动作
-    private inner class BarGesture : SimpleOnGestureListener() {
+    private inner class LineGesture : GestureDetector.SimpleOnGestureListener() {
 
         override fun onDown(e: MotionEvent?): Boolean {
             return true
@@ -204,10 +202,11 @@ class BarChartView : BaseView, View.OnTouchListener {
             distanceX: Float,
             distanceY: Float
         ): Boolean {
-            if (mBarShowNum <= mMinBarScrollShowNum) return false
-            val position = dp2px(context, scrollX.toFloat())
+            if (mLineShowNum <= mMinLineScrollShowNum) return false
+
+            val position = DensityUtil.dp2px(context, scrollX.toFloat())
             if (distanceX >= 0) {
-                if (position <= mBarMaxWidth) {
+                if (position <= mLineMaxWidth) {
                     scrollBy(distanceX.toInt(), 0)
                 }
             } else {
@@ -238,21 +237,22 @@ class BarChartView : BaseView, View.OnTouchListener {
         }
     }
 
-    fun setData(barBeanList: List<BarBean>) {
+    fun setData(lineBeanList: List<LineBean>) {
         val data: MutableList<Float> = ArrayList()
         val descriptions: MutableList<String> = ArrayList()
-        for (i in barBeanList.indices) {
-            barBeanList[i].getValue()?.let {
+        for (i in lineBeanList.indices) {
+            lineBeanList[i].getValue()?.let {
                 data.add(it)
                 if (mMaxData < it) {
                     mMaxData = it
                 }
             }
-            barBeanList[i].getDescription()?.let { descriptions.add(it) }
+            lineBeanList[i].getDescription()?.let { descriptions.add(it) }
         }
-        mBarShowNum = barBeanList.size
+        mLineShowNum = lineBeanList.size
         fixMaxData()
         setData(data, descriptions)
+        dataPoints = FloatArray(mData!!.size * 4)
     }
 
     // 将最大值修正

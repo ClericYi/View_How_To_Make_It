@@ -159,7 +159,7 @@ class PieChartView : BaseView {
         return sum * 360
     }
 
-    fun setData(
+    private fun setData(
         data: MutableList<Float>?,
         colors: List<Int>?,
         descriptions: List<String>?
