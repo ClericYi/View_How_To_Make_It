@@ -1,5 +1,5 @@
 
-本项目的配套博客，详细见于掘金[Android 自定义View篇](https://juejin.im/collection/5e7ca08fe51d45364b888317)
+本项目的配套博客，详细见于掘金[Android 自定义View篇](https://juejin.im/collection/6845242432213221383)
 
 # 包导入
 ```xml
